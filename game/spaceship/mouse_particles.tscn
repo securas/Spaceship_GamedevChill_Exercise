@@ -1,0 +1,73 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://spaceship/mouse_particles.gd" type="Script" id=1]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type particles;
+
+uniform vec2 target = vec2( 200.0, 100.0 );
+
+
+float rand_from_seed(inout uint seed) {
+	int k;
+	int s = int(seed);
+	if (s == 0)
+	s = 305420679;
+	k = s / 127773;
+	s = 16807 * (s - k * 127773) - 2836 * k;
+	if (s < 0)
+		s += 2147483647;
+	seed = uint(s);
+	return float(seed % uint(65536)) / 65535.0;
+}
+
+float rand_from_seed_m1_p1(inout uint seed) {
+	return rand_from_seed(seed) * 2.0 - 1.0;
+}
+
+uint hash(uint x) {
+	x = ((x >> uint(16)) ^ x) * uint(73244475);
+	x = ((x >> uint(16)) ^ x) * uint(73244475);
+	x = (x >> uint(16)) ^ x;
+	return x;
+}
+
+void vertex() {
+	uint base_number = NUMBER;
+	uint alt_seed = hash(base_number + uint(1) + RANDOM_SEED);
+	//float angle_rand = rand_from_seed(alt_seed);
+	
+	if( RESTART )
+	{
+		VELOCITY.xy = vec2( 100, 0 );
+	}
+	else
+	{
+		
+		vec2 dist =  target - TRANSFORM[3].xy;
+		if( length( dist ) < 2.0 )
+		{
+			COLOR *= 0.;
+		}
+		else
+		{
+			vec2 desired_velocity = normalize( dist ) * 100.0;
+			vec2 force = -( VELOCITY.xy - desired_velocity ) * DELTA * 1.0*0.5;
+			VELOCITY.xy += force;
+		}
+	}
+	
+}
+
+"
+
+[sub_resource type="ShaderMaterial" id=2]
+shader = SubResource( 1 )
+shader_param/target = Vector2( 200, 100 )
+
+[node name="Particles2D" type="Particles2D"]
+amount = 800
+lifetime = 100.0
+visibility_rect = Rect2( -200, -200, 400, 400 )
+process_material = SubResource( 2 )
+script = ExtResource( 1 )

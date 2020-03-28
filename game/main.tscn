@@ -1,0 +1,64 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://spaceship/spaceship.tscn" type="PackedScene" id=1]
+[ext_resource path="res://floor/floor.tscn" type="PackedScene" id=2]
+
+[sub_resource type="ParticlesMaterial" id=1]
+emission_shape = 2
+emission_box_extents = Vector3( 1, 90, 1 )
+flag_disable_z = true
+spread = 0.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = -100.0
+angular_velocity = 0.376471
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+
+[sub_resource type="RectangleShape2D" id=2]
+extents = Vector2( 10, 128 )
+
+[node name="main" type="Node2D"]
+__meta__ = {
+"_edit_lock_": true
+}
+
+[node name="bg" type="Polygon2D" parent="."]
+color = Color( 0, 0, 0, 1 )
+polygon = PoolVector2Array( 0, 0, 320, 0, 320, 184, 0, 184 )
+
+[node name="Particles2D2" type="Particles2D" parent="."]
+modulate = Color( 0.466667, 0.466667, 0.466667, 1 )
+position = Vector2( 320, 90 )
+amount = 50
+lifetime = 4.0
+preprocess = 4.0
+speed_scale = 0.5
+visibility_rect = Rect2( -320, -90, 320, 180 )
+process_material = SubResource( 1 )
+
+[node name="Particles2D" type="Particles2D" parent="."]
+position = Vector2( 320, 90 )
+amount = 25
+lifetime = 4.0
+preprocess = 4.0
+visibility_rect = Rect2( -320, -90, 320, 180 )
+process_material = SubResource( 1 )
+
+[node name="spaceship" parent="." instance=ExtResource( 1 )]
+position = Vector2( 176, 96 )
+
+[node name="floor" parent="." instance=ExtResource( 2 )]
+
+[node name="ceiling" parent="." instance=ExtResource( 2 )]
+position = Vector2( 0, 152 )
+scale = Vector2( 1, -1 )
+
+[node name="limit" type="StaticBody2D" parent="."]
+
+[node name="left" type="CollisionShape2D" parent="limit"]
+position = Vector2( -10, 90 )
+shape = SubResource( 2 )
+
+[node name="left2" type="CollisionShape2D" parent="limit"]
+position = Vector2( 330, 90 )
+shape = SubResource( 2 )
